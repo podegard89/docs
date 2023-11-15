@@ -4,8 +4,9 @@ description: Add a backend to your project with Supabase
 type: backend
 service: Supabase
 ---
-import PackageManagerTabs from '~/components/tabs/PackageManagerTabs.astro'
-import FileTree from '~/components/FileTree.astro'
+
+import PackageManagerTabs from "~/components/tabs/PackageManagerTabs.astro";
+import FileTree from "~/components/FileTree.astro";
 
 [Supabase](https://supabase.com/) is an open source Firebase alternative. It provides a Postgres database, authentication, edge functions, realtime subscriptions, and storage.
 
@@ -34,12 +35,12 @@ If you would like to have IntelliSense for your environment variables, edit or c
 
 ```ts title="src/env.d.ts"
 interface ImportMetaEnv {
-  readonly SUPABASE_URL: string
-  readonly SUPABASE_ANON_KEY: string
+  readonly SUPABASE_URL: string;
+  readonly SUPABASE_ANON_KEY: string;
 }
 
 interface ImportMeta {
-  readonly env: ImportMetaEnv
+  readonly env: ImportMetaEnv;
 }
 ```
 
@@ -50,11 +51,7 @@ Read more about [environment variables](/en/guides/environment-variables/) and `
 Your project should now include these files:
 
 <FileTree title="Project Structure">
-- src/
-  - **env.d.ts**
-- **.env**
-- astro.config.mjs
-- package.json
+  - src/ - **env.d.ts** - **.env** - astro.config.mjs - package.json
 </FileTree>
 
 ### Installing dependencies
@@ -62,21 +59,9 @@ Your project should now include these files:
 To connect to Supabase, you will need to install `@supabase/supabase-js` in your project.
 
 <PackageManagerTabs>
-  <Fragment slot="npm">
-  ```shell
-  npm install @supabase/supabase-js
-  ```
-  </Fragment>
-  <Fragment slot="pnpm">
-  ```shell
-  pnpm add @supabase/supabase-js
-  ```
-  </Fragment>
-  <Fragment slot="yarn">
-  ```shell
-  yarn add @supabase/supabase-js
-  ```
-  </Fragment>
+  <Fragment slot="npm">```shell npm install @supabase/supabase-js ```</Fragment>
+  <Fragment slot="pnpm">```shell pnpm add @supabase/supabase-js ```</Fragment>
+  <Fragment slot="yarn">```shell yarn add @supabase/supabase-js ```</Fragment>
 </PackageManagerTabs>
 
 Next, create a folder named `lib` in your `src/` directory. This is where you will add your Supabase client.
@@ -88,20 +73,15 @@ import { createClient } from "@supabase/supabase-js";
 
 export const supabase = createClient(
   import.meta.env.SUPABASE_URL,
-  import.meta.env.SUPABASE_ANON_KEY,
+  import.meta.env.SUPABASE_ANON_KEY
 );
 ```
 
 Now, your project should include these files:
 
 <FileTree title="Project Structure">
-- src/
-  - lib/
-    - **supabase.ts**
-  - env.d.ts
-- .env
-- astro.config.mjs
-- package.json
+  - src/ - lib/ - **supabase.ts** - env.d.ts - .env - astro.config.mjs -
+  package.json
 </FileTree>
 
 ## Adding authentication with Supabase
@@ -124,19 +104,9 @@ To add authentication to your project, you will need to create a few server endp
 Create these endpoints in the `src/pages/api/auth` directory of your project. Your project should now include these new files:
 
 <FileTree title="Project Structure">
-- src/
-  - lib/
-    - supabase.ts
-  - pages/
-    - api/
-      - auth/
-        - **signin.ts**
-        - **signout.ts**
-        - **register.ts**
-  - env.d.ts
-- .env
-- astro.config.mjs
-- package.json
+  - src/ - lib/ - supabase.ts - pages/ - api/ - auth/ - **signin.ts** -
+  **signout.ts** - **register.ts** - env.d.ts - .env - astro.config.mjs -
+  package.json
 </FileTree>
 
 `register.ts` creates a new user in Supabase. It accepts a `POST` request with the an email and password. It then uses the Supabase SDK to create a new user.
@@ -225,22 +195,9 @@ Now that you have created your server endpoints, create the pages that will use 
 Create these pages in the `src/pages` directory. Your project should now include these new files:
 
 <FileTree title="Project Structure">
-- src/
-  - lib/
-    - supabase.ts
-  - pages/
-    - api/
-      - auth/
-        - signin.ts
-        - signout.ts
-        - register.ts
-    - **register.astro**
-    - **signin.astro**
-    - **dashboard.astro**
-  - env.d.ts
-- .env
-- astro.config.mjs
-- package.json
+  - src/ - lib/ - supabase.ts - pages/ - api/ - auth/ - signin.ts - signout.ts -
+  register.ts - **register.astro** - **signin.astro** - **dashboard.astro** -
+  env.d.ts - .env - astro.config.mjs - package.json
 </FileTree>
 
 `register.astro` contains a form to register a new user. It accepts an email and password and sends a `POST` request to `/api/auth/register`.
@@ -269,6 +226,8 @@ import Layout from "../layouts/Layout.astro";
 ---
 import Layout from "../layouts/Layout.astro";
 
+const { cookies, redirect } = Astro;
+
 const accessToken = cookies.get("sb-access-token");
 const refreshToken = cookies.get("sb-refresh-token");
 
@@ -294,6 +253,8 @@ if (accessToken && refreshToken) {
 
 ```astro title="src/pages/dashboard.astro"
 ---
+const { cookies, redirect } = Astro;
+
 const accessToken = cookies.get("sb-access-token");
 const refreshToken = cookies.get("sb-refresh-token");
 
@@ -342,7 +303,7 @@ export const supabase = createClient(
     auth: {
       flowType: "pkce",
     },
-  },
+  }
 );
 ```
 
@@ -388,6 +349,8 @@ Next, edit the sign in page to include a new button to sign in with the OAuth pr
 ---
 import Layout from "../layouts/Layout.astro";
 
+const { cookies, redirect } = Astro;
+
 const accessToken = cookies.get("sb-access-token");
 const refreshToken = cookies.get("sb-refresh-token");
 
@@ -426,7 +389,7 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider,
       options: {
-        redirectTo: "http://localhost:4321/api/auth/callback"
+        redirectTo: "http://localhost:4321/api/auth/callback",
       },
     });
 
@@ -464,23 +427,9 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
 After creating the OAuth callback endpoint and editing the sign in page and server endpoint, your project should have the following file structure:
 
 <FileTree title="Project Structure">
-- src/
-  - lib/
-    - supabase.ts
-  - pages/
-    - api/
-      - auth/
-        - signin.ts
-        - signout.ts
-        - register.ts
-        - callback.ts
-    - register.astro
-    - signin.astro
-    - dashboard.astro
-  - env.d.ts
-- .env
-- astro.config.mjs
-- package.json
+  - src/ - lib/ - supabase.ts - pages/ - api/ - auth/ - signin.ts - signout.ts -
+  register.ts - callback.ts - register.astro - signin.astro - dashboard.astro -
+  env.d.ts - .env - astro.config.mjs - package.json
 </FileTree>
 
 ## Community Resources
